@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 from celery import shared_task
+from celery.signals import celeryd_init, worker_shutdown
 from oscar.celeryapp import app
 from gevent import monkey; monkey.patch_all()
 import gevent
@@ -78,3 +79,13 @@ def update_device(device):
 @shared_task
 def delete_device(device):
     queue.put({'type': 'DEL', 'device': device})
+
+
+@celeryd_init
+def startup(**kwargs):
+    run_server.delay()
+
+
+@worker_shutdown
+def shutdown():
+    queue.put("STOP")

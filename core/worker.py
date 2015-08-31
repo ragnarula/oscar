@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 from celery import shared_task
-from celery.signals import celeryd_init, worker_init
+from celery.signals import celeryd_init, worker_process_init
 from celery import platforms
 from oscar.celeryapp import app
 from gevent import monkey; monkey.patch_all()
@@ -87,11 +87,11 @@ def startup(**kwargs):
     run_server.delay()
 
 
-def shutdown(a,b):
+def shutdown(a, b):
     queue.put("STOP")
 
 
-@worker_init.connect
+@worker_process_init.connect
 def setup_signal_handlers():
     platforms.signals["TERM"] = shutdown
     platforms.signals["INT"] = shutdown

@@ -97,7 +97,7 @@ def shutdown(a, b):
 
 
 @celeryd_init.connect
-def setup_signal_handlers():
+def setup_signal_handlers(**kwargs):
     print "connecting handler"
     platforms.signals["TERM"] = shutdown
     platforms.signals["INT"] = shutdown

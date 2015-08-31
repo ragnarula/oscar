@@ -88,11 +88,16 @@ def startup(**kwargs):
 
 
 def shutdown(a, b):
+    global queue
+    global running
+    print "got signal"
     queue.put("STOP")
     running = False
+    print "ending"
 
 
 @worker_process_init.connect
 def setup_signal_handlers():
+    print "connecting handler"
     platforms.signals["TERM"] = shutdown
     platforms.signals["INT"] = shutdown

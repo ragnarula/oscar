@@ -82,21 +82,21 @@ def delete_device(device):
     queue.put({'type': 'DEL', 'device': device})
 
 
-@worker_process_init.connect
-def startup(**kwargs):
-    run_server.delay()
-
-
-def shutdown(a, b):
-    global queue
-    global running
-    print "got signal"
-    stop_server.delay()
-    print "ending"
-
-
-@worker_process_init.connect
-def setup_signal_handlers(**kwargs):
-    print "connecting handler"
-    platforms.signals["TERM"] = shutdown
-    platforms.signals["INT"] = shutdown
+# @worker_process_init.connect
+# def startup(**kwargs):
+#     run_server.delay()
+#
+# 
+# def shutdown(a, b):
+#     global queue
+#     global running
+#     print "got signal"
+#     stop_server.delay()
+#     print "ending"
+#
+#
+# @worker_process_init.connect
+# def setup_signal_handlers(**kwargs):
+#     print "connecting handler"
+#     platforms.signals["TERM"] = shutdown
+#     platforms.signals["INT"] = shutdown

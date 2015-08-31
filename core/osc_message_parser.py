@@ -1,6 +1,6 @@
 import gevent
 from gevent import monkey
-monkey.patch_all(thread=False)
+monkey.patch_all()
 from gevent.pool import Pool
 from gevent.queue import Queue
 from pythonosc.osc_message import OscMessage, ParseError

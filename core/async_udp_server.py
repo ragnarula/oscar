@@ -1,6 +1,6 @@
 import gevent
 import gevent.monkey
-gevent.monkey.patch_all(thread=False)
+gevent.monkey.patch_all()
 from gevent.pool import Pool
 from gevent import socket
 import socket as _socket

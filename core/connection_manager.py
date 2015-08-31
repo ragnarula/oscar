@@ -2,7 +2,7 @@ __author__ = 'raghavnarula'
 from django.db import DatabaseError
 import gevent
 from gevent import monkey
-monkey.patch_all(thread=False)
+monkey.patch_all()
 from gevent.pool import Pool
 from gevent.queue import Queue
 from async_tcp_client import AsyncTCPClient

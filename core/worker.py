@@ -89,6 +89,7 @@ def startup(**kwargs):
 
 def shutdown(a, b):
     queue.put("STOP")
+    running = False
 
 
 @worker_process_init.connect

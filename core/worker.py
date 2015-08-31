@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 from celery import shared_task
-from gevent import monkey; monkey.patch_all()
+from gevent import monkey; monkey.patch_all(thread=False)
 import gevent
 from gevent.pool import Pool
 from gevent.queue import Queue

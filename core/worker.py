@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from celery import shared_task
 from celery.signals import celeryd_init, worker_process_init
 from celery import platforms
+from gevent.lock import BoundedSemaphore
 from oscar.celeryapp import app
 from gevent import monkey; monkey.patch_all()
 import gevent
@@ -15,7 +16,7 @@ import signal, os
 
 running = False
 queue = Queue()
-
+sem = BoundedSemaphore(1)
 
 @shared_task
 def stop_server():
@@ -32,13 +33,16 @@ def stop_and_kill():
 def run_server():
     global running
     global queue
+    sem.acquire()
     if running:
         print "Task already running!"
+        sem.release()
         return
 
     app.control.purge()
     queue = Queue()
     running = True
+    sem.release()
 
     pool = Pool()
     udp_server = AsyncUDPServer('', 6060, pool=pool)
@@ -82,21 +86,21 @@ def delete_device(device):
     queue.put({'type': 'DEL', 'device': device})
 
 
-@worker_process_init.connect
+@celeryd_init.connect
 def startup(**kwargs):
     run_server.delay()
-
-
-def shutdown(a, b):
-    global queue
-    global running
-    print "got signal"
-    stop_server.delay()
-    print "ending"
-
-
-@worker_process_init.connect
-def setup_signal_handlers(**kwargs):
-    print "connecting handler"
-    platforms.signals["TERM"] = shutdown
-    platforms.signals["INT"] = shutdown
+#
+#
+# def shutdown(a, b):
+#     global queue
+#     global running
+#     print "got signal"
+#     stop_server.delay()
+#     print "ending"
+#
+#
+# @worker_process_init.connect
+# def setup_signal_handlers(**kwargs):
+#     print "connecting handler"
+#     platforms.signals["TERM"] = shutdown
+#     platforms.signals["INT"] = shutdown

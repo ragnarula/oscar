@@ -38,8 +38,8 @@ def run_server():
     if running:
         print "Task already running!"
         return
-    signal.signal(signal.SIGINT, stop_and_kill)
-    signal.signal(signal.SIGTERM, stop_and_kill)
+    signal.signal(signal.SIGINT, sig_handler)
+    signal.signal(signal.SIGTERM, sig_handler)
     app.control.purge()
     queue = Queue()
     running = True

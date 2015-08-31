@@ -22,13 +22,13 @@ def stop_server():
 
 
 def sig_handler(sig, frame):
-    stop_server()
+    stop_and_kill()
 
 
 @shared_task
 def stop_and_kill():
     queue.put("STOP")
-    os.kill(os.getpid(), signal.SIGINT)
+    os.kill(os.getpid(), signal.SIGTERM)
 
 
 @shared_task

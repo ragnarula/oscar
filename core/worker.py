@@ -10,12 +10,18 @@ from core.osc_message_parser import OSCMessageParser
 from core.connection_manager import ConnectionManager
 import signal, os
 
+
 running = False
 queue = Queue()
 
 
 @shared_task
 def stop_server():
+    queue.put("STOP")
+
+
+@shared_task
+def stop_and_kill():
     queue.put("STOP")
     os.kill(os.getpid(), signal.SIGINT)
 
@@ -27,6 +33,8 @@ def run_server():
     if running:
         print "Task already running!"
         return
+    signal.signal(signal.SIGINT, stop_and_kill)
+    signal.signal(signal.SIGTERM, stop_and_kill)
     app.control.purge()
     queue = Queue()
     running = True

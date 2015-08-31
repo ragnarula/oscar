@@ -87,7 +87,11 @@ def startup(**kwargs):
     run_server.delay()
 
 
+def shutdown(*args):
+    queue.put("STOP")
+
+
 @worker_init.connect
-def shutdown():
-    platforms.signals["TERM"] = stop_server
-    platforms.signals["INT"] = stop_server
+def setup_signal_handlers():
+    platforms.signals["TERM"] = shutdown
+    platforms.signals["INT"] = shutdown

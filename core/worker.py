@@ -15,14 +15,9 @@ running = False
 queue = Queue()
 
 
-
 @shared_task
 def stop_server():
     queue.put("STOP")
-
-
-def sig_handler(sig, frame):
-    stop_and_kill()
 
 
 @shared_task
@@ -38,8 +33,7 @@ def run_server():
     if running:
         print "Task already running!"
         return
-    signal.signal(signal.SIGINT, sig_handler)
-    signal.signal(signal.SIGTERM, sig_handler)
+
     app.control.purge()
     queue = Queue()
     running = True
@@ -62,6 +56,7 @@ def run_server():
         except gevent.queue.Empty:
             continue
         if msg == "STOP":
+            print "Received STOP"
             break
         if msg['type'] is "UP":
             connection_manager.update(msg['device'])

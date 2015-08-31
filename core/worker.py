@@ -96,7 +96,7 @@ def shutdown(a, b):
     print "ending"
 
 
-@worker_process_init.connect
+@celeryd_init.connect
 def setup_signal_handlers():
     print "connecting handler"
     platforms.signals["TERM"] = shutdown

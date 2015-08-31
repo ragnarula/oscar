@@ -15,9 +15,14 @@ running = False
 queue = Queue()
 
 
+
 @shared_task
 def stop_server():
     queue.put("STOP")
+
+
+def sig_handler(sig, frame):
+    stop_server()
 
 
 @shared_task

@@ -87,7 +87,7 @@ def startup(**kwargs):
     run_server.delay()
 
 
-def shutdown(*args):
+def shutdown(a,b):
     queue.put("STOP")
 
 

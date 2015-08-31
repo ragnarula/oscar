@@ -81,11 +81,11 @@ def delete_device(device):
     queue.put({'type': 'DEL', 'device': device})
 
 
-@celeryd_init
+@celeryd_init.connect
 def startup(**kwargs):
     run_server.delay()
 
 
-@worker_shutdown
+@worker_shutdown.connect
 def shutdown():
     queue.put("STOP")

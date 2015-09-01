@@ -27,6 +27,7 @@ class DeviceConnection(AsyncTCPClient):
     class ConnectingState(AsyncTCPClient.ConnectingState):
 
         def update(self, conn):
+            print "update"
             conn.device.refresh_from_db()
             if conn.device.timeout != conn.timeout:
                 conn.timeout = conn.device.timeout
@@ -37,8 +38,10 @@ class DeviceConnection(AsyncTCPClient):
                 conn.stop()
 
             if conn.device.active:
+                print "active"
                 conn.start()
             else:
+                print "not active"
                 conn.stop()
 
     class ErrorState(AsyncTCPClient.ErrorState):

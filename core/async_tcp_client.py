@@ -179,7 +179,10 @@ class AsyncTCPClient:
     def get_line(self):
         data = []
         while self.state == AsyncTCPClient.CONNECTED_STATE:
-            msg = self.sock.recv(4096)
+            try:
+                msg = self.sock.recv(4096)
+            except _socket.error:
+                pass
             if msg is None or len(msg) == 0:
                 self.change_state(AsyncTCPClient.ERROR_STATE)
                 break

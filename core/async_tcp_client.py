@@ -198,6 +198,7 @@ class AsyncTCPClient:
                 msg = self.msg_queue.get(timeout=1)
             except gevent.queue.Empty:
                 continue
+            print "sending message " + msg + " to " + self.host
             try:
                 socket.wait_write(self.sock.fileno(), timeout=1)
                 self.sock.sendall(str(msg))

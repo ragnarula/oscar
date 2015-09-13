@@ -100,8 +100,8 @@ class AsyncUDPServer():
                 socket.wait_read(self.sock.fileno(), timeout=1)
             except _socket.error:
                 continue
-            print "received UDP message " + msg
             msg = self.sock.recv(4096)
+            print "received UDP message " + msg
             if self.msg_handler is not None:
                 self.msg_handler(msg)
         print "udp ending"

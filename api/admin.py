@@ -4,13 +4,17 @@ from django.utils.translation import ugettext_lazy
 
 
 def activate_all(modeladmin, request, queryset):
-        queryset.update(active=True)
+        for d in queryset:
+            d.active = True
+            d.save()
 
 activate_all.short_description = "Active selected device connections"
 
 
 def deactivate_all(modeladmin, request, queryset):
-    queryset.update(active=False)
+    for d in queryset:
+        d.active = False
+        d.save()
 
 deactivate_all.short_description = "Deactive selected device connections"
 

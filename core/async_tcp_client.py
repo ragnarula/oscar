@@ -156,22 +156,22 @@ class AsyncTCPClient:
             if self.timeout is not None and connection_attempts > self.timeout:
                 self.sock.close()
                 self.change_state(AsyncTCPClient.TIMEOUT_STATE)
-                self.logger.debug("Connection to %s exceeded timeout of %d", self.host, self.timeout)
+                self.logger.debug("Connection to %s exceeded timeout of %s", self.host, self.timeout)
                 break
             connection_attempts += 1
             try:
-                self.logger.debug("Attepmpting to connect to %s on port %d", self.host, self.port)
+                self.logger.debug("Attepmpting to connect to %s on port %s", self.host, self.port)
                 address = (self.host, int(self.port))
                 self.sock.connect(address)
             except _socket.error:
                 self.sock.close()
                 self.sock = self.get_socket()
-                self.logger.debug("Could not connect to %s on port %d, waiting 1 to try again",
+                self.logger.debug("Could not connect to %s on port %s, waiting 1 to try again",
                                   self.host,
                                   self.port)
                 gevent.sleep(1)
                 continue
-            self.logger.debug("Connection to %s on port %d established", self.host, self.port)
+            self.logger.debug("Connection to %s on port %s established", self.host, self.port)
             self.msg_queue = Queue()
             self.change_state(AsyncTCPClient.CONNECTED_STATE)
             self.logger.debug("Spawning thread for receive loop")
@@ -186,7 +186,7 @@ class AsyncTCPClient:
             except _socket.error:
                 continue
             msg = self.get_line()
-            self.logger.debug("Received \'%s\' from %s on port %d", msg, self.host, self.port)
+            self.logger.debug("Received \'%s\' from %s on port %s", msg, self.host, self.port)
             if self.msg_handler is not None and msg is not None:
                 self.msg_handler(msg)
 
@@ -212,7 +212,7 @@ class AsyncTCPClient:
                 msg = self.msg_queue.get(timeout=1)
             except gevent.queue.Empty:
                 continue
-            self.logger.debug("Sending message \'%s\' to %s on port %d", msg, self.host, self.port)
+            self.logger.debug("Sending message \'%s\' to %s on port %s", msg, self.host, self.port)
             try:
                 socket.wait_write(self.sock.fileno(), timeout=1)
                 self.sock.sendall(str(msg))

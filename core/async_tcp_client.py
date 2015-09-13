@@ -5,7 +5,7 @@ from gevent.pool import Pool
 from gevent.queue import Queue
 from gevent import socket
 import socket as _socket
-
+import logging
 
 class AsyncTCPClient:
     # state classes first
@@ -125,6 +125,7 @@ class AsyncTCPClient:
         self.msg_queue = None
         self.state = AsyncTCPClient.READY_STATE
         self.state.enter(self)
+        self.logger = logging.getLogger(__name__)
 
     def get_socket(self):
         if self.socket_factory is not None:
@@ -132,15 +133,19 @@ class AsyncTCPClient:
         return socket.socket(_socket.AF_INET, _socket.SOCK_STREAM)
 
     def start(self):
+        self.logger.info("Starting %s", self.host)
         self.state.start(self)
 
     def stop(self):
+        self.logger.info("Stopping %s", self.host)
         self.state.stop(self)
 
     def send(self, msg):
+        self.logger.info("Sending to %s", self.host)
         self.state.send(self, msg)
 
     def change_state(self, state):
+        self.logger.info("Connection to %s changing state from %s to %s", self.host, self.state.name, state.name)
         self.state.exit(self)
         self.state = state
         self.state.enter(self)
@@ -151,19 +156,27 @@ class AsyncTCPClient:
             if self.timeout is not None and connection_attempts > self.timeout:
                 self.sock.close()
                 self.change_state(AsyncTCPClient.TIMEOUT_STATE)
+                self.logger.debug("Connection to %s exceeded timeout of %d", self.host, self.timeout)
                 break
             connection_attempts += 1
             try:
+                self.logger.debug("Attepmpting to connect to %s on port %d", self.host, self.port)
                 address = (self.host, int(self.port))
                 self.sock.connect(address)
             except _socket.error:
                 self.sock.close()
                 self.sock = self.get_socket()
+                self.logger.debug("Could not connect to %s on port %d, waiting 1 to try again",
+                                  self.host,
+                                  self.port)
                 gevent.sleep(1)
                 continue
+            self.logger.debug("Connection to %s on port %d established", self.host, self.port)
             self.msg_queue = Queue()
             self.change_state(AsyncTCPClient.CONNECTED_STATE)
+            self.logger.debug("Spawning thread for receive loop")
             self.pool.spawn(self.receive_loop)
+            self.logger.debug("Spawning thread for send loop")
             self.pool.spawn(self.send_loop)
 
     def receive_loop(self):
@@ -173,6 +186,7 @@ class AsyncTCPClient:
             except _socket.error:
                 continue
             msg = self.get_line()
+            self.logger.debug("Received \'%s\' from %s on port %d", msg, self.host, self.port)
             if self.msg_handler is not None and msg is not None:
                 self.msg_handler(msg)
 
@@ -198,7 +212,7 @@ class AsyncTCPClient:
                 msg = self.msg_queue.get(timeout=1)
             except gevent.queue.Empty:
                 continue
-            print "sending message " + msg + " to " + self.host
+            self.logger.debug("Sending message \'%s\' to %s on port %d", msg, self.host, self.port)
             try:
                 socket.wait_write(self.sock.fileno(), timeout=1)
                 self.sock.sendall(str(msg))

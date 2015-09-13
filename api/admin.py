@@ -8,7 +8,7 @@ def activate_all(modeladmin, request, queryset):
             d.active = True
             d.save()
 
-activate_all.short_description = "Active selected device connections"
+activate_all.short_description = "Active selected"
 
 
 def deactivate_all(modeladmin, request, queryset):
@@ -16,7 +16,7 @@ def deactivate_all(modeladmin, request, queryset):
         d.active = False
         d.save()
 
-deactivate_all.short_description = "Deactive selected device connections"
+deactivate_all.short_description = "Deactivate selected"
 
 
 class DeviceAdmin(admin.ModelAdmin):

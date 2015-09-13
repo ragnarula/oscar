@@ -3,11 +3,24 @@ from .models import Device
 from django.utils.translation import ugettext_lazy
 
 
+def activate_all(modeladmin, request, queryset):
+        queryset.update(active=True)
+
+activate_all.short_description = "Active selected device connections"
+
+
+def deactivate_all(modeladmin, request, queryset):
+    queryset.update(active=False)
+
+deactivate_all.short_description = "Deactive selected device connections"
+
+
 class DeviceAdmin(admin.ModelAdmin):
 
     readonly_fields = ('current_state',)
     list_display = ('name', 'host', 'port', 'timeout', 'current_state', 'active')
     save_as = True
+    actions = [activate_all, deactivate_all]
 
 
 class MyAdminSite(admin.AdminSite):

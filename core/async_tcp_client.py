@@ -223,6 +223,7 @@ class AsyncTCPClient:
     def get_line(self):
         data = []
         while self.state == AsyncTCPClient.CONNECTED_STATE:
+            msg = ''
             try:
                 msg = self.sock.recv(4096)
             except _socket.timeout:
@@ -235,13 +236,13 @@ class AsyncTCPClient:
                                       self.port)
                     self.change_state(AsyncTCPClient.ERROR_STATE)
                     break
-            # if msg == '':
-            #     if self.state == AsyncTCPClient.CONNECTED_STATE:
-            #         self.logger.debug("Empty msg on connection to %s:%s, changing to ERROR_STATE",
-            #                           self.host,
-            #                           self.port)
-            #         self.change_state(AsyncTCPClient.ERROR_STATE)
-            #         break
+            if msg == '':
+                if self.state == AsyncTCPClient.CONNECTED_STATE:
+                    self.logger.debug("Empty msg on connection to %s:%s, changing to ERROR_STATE",
+                                      self.host,
+                                      self.port)
+                    self.change_state(AsyncTCPClient.ERROR_STATE)
+                    break
             data.append(msg)
             if msg.endswith('\n'):
                 break

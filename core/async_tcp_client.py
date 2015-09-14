@@ -63,7 +63,6 @@ class AsyncTCPClient:
             pass
 
         def exit(self, client):
-            client.sock.shutdown()
             client.sock.close()
 
     class ErrorState:

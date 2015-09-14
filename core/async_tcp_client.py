@@ -199,7 +199,7 @@ class AsyncTCPClient:
             try:
                 msg = self.sock.recv(4096)
             except _socket.error:
-                pass
+                continue
             if msg is None or len(msg) == 0:
                 self.change_state(AsyncTCPClient.ERROR_STATE)
                 break

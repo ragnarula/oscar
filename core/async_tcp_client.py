@@ -236,22 +236,25 @@ class AsyncTCPClient:
                 print "timeout"
                 continue
             except _socket.error:
-                self.logger.debug("Socket error on connection to %s:%s, changing to ERROR_STATE",
-                                  self.host,
-                                  self.port)
-                self.change_state(AsyncTCPClient.ERROR_STATE)
-                break
+                if self.state == AsyncTCPClient.CONNECTED_STATE:
+                    self.logger.debug("Socket error on connection to %s:%s, changing to ERROR_STATE",
+                                      self.host,
+                                      self.port)
+                    self.change_state(AsyncTCPClient.ERROR_STATE)
+                    break
             if msg == '':
-                self.logger.debug("Empty msg on connection to %s:%s, changing to ERROR_STATE",
-                                  self.host,
-                                  self.port)
-                self.change_state(AsyncTCPClient.ERROR_STATE)
-                break
+                if self.state == AsyncTCPClient.CONNECTED_STATE:
+                    self.logger.debug("Empty msg on connection to %s:%s, changing to ERROR_STATE",
+                                      self.host,
+                                      self.port)
+                    self.change_state(AsyncTCPClient.ERROR_STATE)
+                    break
             data.append(msg)
             if msg.endswith('\n'):
                 break
         if len(data) > 0:
             return ''.join(data)
+
 
     def send_loop(self):
         while self.state == AsyncTCPClient.CONNECTED_STATE:

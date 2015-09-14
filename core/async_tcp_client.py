@@ -35,7 +35,7 @@ class AsyncTCPClient:
             pass
 
         def stop(self, client):
-            client.change_state(AsyncTCPClient.READY_STATE)
+            client.change_state(AsyncTCPClient.DISCONNECTING_STATE)
 
         def send(self, client, msg):
             pass
@@ -53,7 +53,7 @@ class AsyncTCPClient:
             pass
 
         def stop(self, client):
-            client.change_state(AsyncTCPClient.READY_STATE)
+            client.change_state(AsyncTCPClient.DISCONNECTING_STATE)
 
         def send(self, client, msg):
             client.msg_queue.put(msg)
@@ -64,6 +64,25 @@ class AsyncTCPClient:
         def exit(self, client):
             client.sock.close()
 
+    class DisconnectingState:
+        name = 'DISCONNECTING'
+
+        def start(self, client):
+            pass
+
+        def stop(self, client):
+            pass
+
+        def send(self, client, msg):
+            pass
+
+        def enter(self, client):
+            client.sock.close()
+            client.change_state(AsyncTCPClient.READY_STATE)
+
+        def exit(self, client):
+            pass
+
     class ErrorState:
         name = 'ERROR'
 
@@ -71,7 +90,7 @@ class AsyncTCPClient:
             client.change_state(AsyncTCPClient.READY_STATE)
 
         def stop(self, client):
-            client.change_state(AsyncTCPClient.READY_STATE)
+            pass
 
         def send(self, server, msg):
             pass
@@ -90,7 +109,7 @@ class AsyncTCPClient:
             client.change_state(AsyncTCPClient.CONNECTING_STATE)
 
         def stop(self, client):
-            client.change_state(AsyncTCPClient.READY_STATE)
+            pass
 
         def send(self, server, msg):
             pass
@@ -106,6 +125,7 @@ class AsyncTCPClient:
     READY_STATE = ReadyState()
     CONNECTING_STATE = ConnectingState()
     CONNECTED_STATE = ConnectedState()
+    DISCONNECTING_STATE = DisconnectingState()
     ERROR_STATE = ErrorState()
     TIMEOUT_STATE = TimeoutState()
 

@@ -47,7 +47,7 @@ class DeviceConnection(AsyncTCPClient):
         self.device.refresh_from_db()
         if not self.device.active:
             self.stop()
-        
+
         if self.device.timeout != self.timeout:
             self.timeout = self.device.timeout
         if (

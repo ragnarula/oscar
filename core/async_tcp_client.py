@@ -41,6 +41,7 @@ class AsyncTCPClient:
             pass
 
         def enter(self, client):
+            client.logger.debug("Spawning connection loop for %s:%s", client.host, client.port)
             client.pool.spawn(client.connect_loop)
 
         def exit(self, client):

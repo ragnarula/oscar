@@ -35,7 +35,6 @@ class DeviceConnection(AsyncTCPClient):
         AsyncTCPClient.__init__(self, device.host, device.port, **kwargs)
 
     def change_state(self, state):
-        print "device " + self.device.name + " changing state from " + self.state.name + " to " + state.name
         AsyncTCPClient.change_state(self, state)
         self.device.current_state = self.state.name
         try:

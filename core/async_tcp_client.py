@@ -184,10 +184,10 @@ class AsyncTCPClient:
 
     def receive_loop(self):
         while self.state == AsyncTCPClient.CONNECTED_STATE:
-            try:
-                socket.wait_read(self.sock.fileno(), timeout=1)
-            except _socket.error:
-                continue
+            # try:
+            #     socket.wait_read(self.sock.fileno(), timeout=1)
+            # except _socket.error:
+            #     continue
             msg = self.get_line()
             self.logger.debug("Received \'%s\' from %s on port %s", msg, self.host, self.port)
             if self.msg_handler is not None and msg is not None:
@@ -199,7 +199,8 @@ class AsyncTCPClient:
             try:
                 msg = self.sock.recv(4096)
             except _socket.error:
-                continue
+                self.change_state(AsyncTCPClient.ERROR_STATE)
+                break
             if msg is None or len(msg) == 0:
                 self.change_state(AsyncTCPClient.ERROR_STATE)
                 break

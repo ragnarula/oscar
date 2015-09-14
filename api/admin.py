@@ -22,7 +22,7 @@ deactivate_all.short_description = "Deactivate selected"
 class DeviceAdmin(admin.ModelAdmin):
 
     readonly_fields = ('current_state',)
-    list_display = ('name', 'host', 'port', 'timeout', 'current_state', 'active')
+    list_display = ('name', 'active', 'host', 'port', 'timeout', 'current_state')
     save_as = True
     actions = [activate_all, deactivate_all]
     list_editable = ('name', 'host', 'port', 'timeout', 'active')

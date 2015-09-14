@@ -16,7 +16,7 @@ class AsyncTCPClient:
             client.change_state(AsyncTCPClient.CONNECTING_STATE)
 
         def stop(self, client):
-            pass
+            client.active = False
 
         def send(self, client, msg):
             pass
@@ -35,6 +35,7 @@ class AsyncTCPClient:
             pass
 
         def stop(self, client):
+            client.active = False
             client.change_state(AsyncTCPClient.READY_STATE)
 
         def send(self, client, msg):
@@ -53,6 +54,7 @@ class AsyncTCPClient:
             pass
 
         def stop(self, client):
+            client.active = False
             client.change_state(AsyncTCPClient.READY_STATE)
 
         def send(self, client, msg):
@@ -72,6 +74,7 @@ class AsyncTCPClient:
             client.change_state(AsyncTCPClient.CONNECTING_STATE)
 
         def stop(self, client):
+            client.active = False
             client.change_state(AsyncTCPClient.READY_STATE)
 
         def send(self, server, msg):
@@ -91,6 +94,7 @@ class AsyncTCPClient:
             client.change_state(AsyncTCPClient.CONNECTING_STATE)
 
         def stop(self, client):
+            client.active = False
             client.change_state(AsyncTCPClient.READY_STATE)
 
         def send(self, server, msg):

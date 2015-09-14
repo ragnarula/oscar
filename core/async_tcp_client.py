@@ -216,8 +216,8 @@ class AsyncTCPClient:
     def receive_loop(self):
         while self.state == AsyncTCPClient.CONNECTED_STATE:
             msg = self.get_line()
-            self.logger.debug("Received %s from %s:%s", repr(msg), self.host, self.port)
             if self.msg_handler is not None and msg is not None:
+                self.logger.debug("Received %s from %s:%s", repr(msg), self.host, self.port)
                 self.msg_handler(msg)
 
     def get_line(self):

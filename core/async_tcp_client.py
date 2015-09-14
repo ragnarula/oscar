@@ -136,7 +136,6 @@ class AsyncTCPClient:
         sock.setsockopt(_socket.SOL_SOCKET, _socket.SO_KEEPALIVE, 1)
         sock.setsockopt(_socket.SOL_TCP, _socket.TCP_KEEPINTVL, 1)
         sock.setsockopt(_socket.SOL_TCP, _socket.TCP_KEEPCNT, 5)
-        sock.settimeout(1)
         return sock
 
     def start(self):

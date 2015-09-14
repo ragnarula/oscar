@@ -78,7 +78,7 @@ class AsyncUDPServer():
         if logger_factory is None:
             self.logger = logging.getLogger(__name__)
         else:
-            self.logger = logger_factory()
+            self.logger = logger_factory(__name__)
         self.state = AsyncUDPServer.READY_STATE
         self.state.enter(self)
 

@@ -128,7 +128,7 @@ class AsyncTCPClient:
         if logger_factory is None:
             self.logger = logging.getLogger(__name__)
         else:
-            self.logger = logger_factory()
+            self.logger = logger_factory(__name__)
 
     def get_socket(self):
         if self.socket_factory is not None:

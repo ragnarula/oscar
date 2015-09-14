@@ -150,11 +150,12 @@ class ConnectionManager:
     READY_STATE = ReadyState()
     RUNNING_STATE = RunningState()
 
-    def __init__(self, pool=None):
+    def __init__(self, pool=None, logger_factory=None):
         if pool is None:
             self.pool = Pool()
         else:
             self.pool = pool
+        self.logger_factory = logger_factory
         self.osc_msg_queue = None
         self.connection_map = {}
         self.state = ConnectionManager.READY_STATE
@@ -219,7 +220,7 @@ class ConnectionManager:
             device = Device.objects.get(pk=name)
         except Device.DoesNotExist:
             return
-        conn = DeviceConnection(device, pool=self.pool)
+        conn = DeviceConnection(device, pool=self.pool, logger_factory=self.logger_factory)
         if device.active:
             conn.start()
         self.connection_map[device.name] = conn

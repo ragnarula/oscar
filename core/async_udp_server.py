@@ -4,7 +4,7 @@ gevent.monkey.patch_all()
 from gevent.pool import Pool
 from gevent import socket
 import socket as _socket
-
+import logging
 
 class AsyncUDPServer():
     # state classes first
@@ -65,7 +65,7 @@ class AsyncUDPServer():
     RUNNING_STATE = RunningState()
     ERROR_STATE = ErrorState()
 
-    def __init__(self, host, port, socket_factory=None, pool=None):
+    def __init__(self, host, port, socket_factory=None, pool=None, logger_factory=None):
         if pool is None:
             self.pool = Pool()
         else:
@@ -75,6 +75,10 @@ class AsyncUDPServer():
         self.socket_factory = socket_factory
         self.host = host
         self.port = port
+        if logger_factory is None:
+            self.logger = logging.getLogger(__name__)
+        else:
+            self.logger = logger_factory()
         self.state = AsyncUDPServer.READY_STATE
         self.state.enter(self)
 

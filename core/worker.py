@@ -12,7 +12,7 @@ from core.async_udp_server import AsyncUDPServer
 from core.osc_message_parser import OSCMessageParser
 from core.connection_manager import ConnectionManager
 import signal, os
-
+from celery.utils.log import get_task_logger
 
 running = False
 queue = Queue()
@@ -45,9 +45,9 @@ def run_server():
     sem.release()
 
     pool = Pool()
-    udp_server = AsyncUDPServer('', 6060, pool=pool)
+    udp_server = AsyncUDPServer('', 6060, pool=pool, logger_factory=get_task_logger)
     osc_message_parser = OSCMessageParser(pool=pool)
-    connection_manager = ConnectionManager(pool=pool)
+    connection_manager = ConnectionManager(pool=pool, logger_factory=get_task_logger)
 
     udp_server.msg_handler = osc_message_parser.add_message
     osc_message_parser.device_msg_handler = connection_manager.send_osc_message

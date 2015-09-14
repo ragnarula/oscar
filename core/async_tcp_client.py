@@ -111,7 +111,7 @@ class AsyncTCPClient:
     ERROR_STATE = ErrorState()
     TIMEOUT_STATE = TimeoutState()
 
-    def __init__(self, host, port, socket_factory=None, pool=None, timeout=None):
+    def __init__(self, host, port, socket_factory=None, pool=None, timeout=None, logger_factory=None):
         if pool is None:
             self.pool = Pool()
         else:
@@ -125,7 +125,10 @@ class AsyncTCPClient:
         self.msg_queue = None
         self.state = AsyncTCPClient.READY_STATE
         self.state.enter(self)
-        self.logger = logging.getLogger(__name__)
+        if logger_factory is None:
+            self.logger = logging.getLogger(__name__)
+        else:
+            self.logger = logger_factory()
 
     def get_socket(self):
         if self.socket_factory is not None:
@@ -217,7 +220,9 @@ class AsyncTCPClient:
                 socket.wait_write(self.sock.fileno(), timeout=1)
                 self.sock.sendall(str(msg))
             except _socket.error:
+                self.logger.debug("Unable to send message \'%s\' to %s on port $s", msg, self.host, self.port)
                 continue
+            self.logger.debug("Sent message \'%s\' to %s on port %s", msg, self.host, self.port)
 
     def wait(self):
         self.pool.wait()

@@ -25,6 +25,7 @@ class DeviceAdmin(admin.ModelAdmin):
     list_display = ('name', 'host', 'port', 'timeout', 'current_state', 'active')
     save_as = True
     actions = [activate_all, deactivate_all]
+    list_editable = ('name', 'host', 'port', 'timeout', 'active')
 
 
 class MyAdminSite(admin.AdminSite):

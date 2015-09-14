@@ -214,6 +214,7 @@ class AsyncTCPClient:
             self.pool.spawn(self.receive_loop)
             self.logger.debug("Spawning thread for send loop")
             self.pool.spawn(self.send_loop)
+        self.logger.debug("Connection loop ending for %s:%s", self.host, self.port)
 
     def connected(self):
         return self.state == AsyncTCPClient.CONNECTED_STATE

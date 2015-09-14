@@ -110,11 +110,12 @@ class AsyncTCPClient:
     ERROR_STATE = ErrorState()
     TIMEOUT_STATE = TimeoutState()
 
-    def __init__(self, host, port, socket_factory=None, pool=None, timeout=None, logger_factory=None):
+    def __init__(self, host, port, active=False, socket_factory=None, pool=None, timeout=None, logger_factory=None):
         if pool is None:
             self.pool = Pool()
         else:
             self.pool = pool
+        self.active = active
         self.timeout = timeout
         self.msg_handler = None
         self.sock = None

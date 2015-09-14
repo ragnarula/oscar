@@ -23,6 +23,7 @@ class DeviceConnection(AsyncTCPClient):
             conn.host = conn.device.host
             conn.port = conn.device.port
             conn.timeout = conn.device.timeout
+            conn.active = conn.device.active
 
     class ConnectingState(AsyncTCPClient.ConnectingState):
 
@@ -36,7 +37,7 @@ class DeviceConnection(AsyncTCPClient):
             ):
                 conn.stop()
 
-            if conn.device.active:
+            if conn.active:
                 conn.start()
             else:
                 conn.stop()
@@ -48,7 +49,7 @@ class DeviceConnection(AsyncTCPClient):
 
         def enter(self, conn):
             AsyncTCPClient.ErrorState.enter(self, conn)
-            if conn.device.active:
+            if conn.active:
                 conn.start()
 
     class TimeoutState(AsyncTCPClient.TimeoutState):
@@ -58,6 +59,7 @@ class DeviceConnection(AsyncTCPClient):
 
         def enter(self, conn):
             AsyncTCPClient.TimeoutState.enter(self, conn)
+            conn.active = False
             conn.device.active = False
             conn.device.save(update_fields=['active'])
 

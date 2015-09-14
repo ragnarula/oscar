@@ -185,12 +185,12 @@ class AsyncTCPClient:
 
     def receive_loop(self):
         while self.state == AsyncTCPClient.CONNECTED_STATE:
-            # try:
-            #     socket.wait_read(self.sock.fileno(), timeout=1)
-            # except _socket.error:
-            #     continue
+            try:
+                socket.wait_read(self.sock.fileno(), timeout=1)
+            except _socket.error:
+                continue
             msg = self.get_line()
-            self.logger.debug("Received \'%s\' from %s on port %s", repr(msg), self.host, self.port)
+            self.logger.debug("Received %s from %s on port %s", repr(msg), self.host, self.port)
             if self.msg_handler is not None and msg is not None:
                 self.msg_handler(msg)
 
@@ -217,14 +217,14 @@ class AsyncTCPClient:
                 msg = self.msg_queue.get(timeout=1)
             except gevent.queue.Empty:
                 continue
-            self.logger.debug("Sending message \'%s\' to %s on port %s", repr(msg), self.host, self.port)
+            self.logger.debug("Sending message %s to %s on port %s", repr(msg), self.host, self.port)
             try:
                 socket.wait_write(self.sock.fileno(), timeout=1)
                 self.sock.sendall(str(msg))
             except _socket.error:
-                self.logger.debug("Unable to send message \'%s\' to %s on port $s", repr(msg), self.host, self.port)
+                self.logger.debug("Unable to send message %s to %s on port $s", repr(msg), self.host, self.port)
                 continue
-            self.logger.debug("Sent message \'%s\' to %s on port %s", repr(msg), self.host, self.port)
+            self.logger.debug("Sent message %s to %s on port %s", repr(msg), self.host, self.port)
 
     def wait(self):
         self.pool.wait()

@@ -23,7 +23,6 @@ class AsyncTCPClient:
 
         def enter(self, client):
             client.sock = client.get_socket()
-            client.sock.setblocking(1)
             client.msg_queue = Queue()
 
         def exit(self, client):
@@ -133,7 +132,9 @@ class AsyncTCPClient:
     def get_socket(self):
         if self.socket_factory is not None:
             return self.socket_factory()
-        return socket.socket(_socket.AF_INET, _socket.SOCK_STREAM)
+        sock = socket.socket(_socket.AF_INET, _socket.SOCK_STREAM)
+        sock.settimeout(1)
+        return sock
 
     def start(self):
         self.logger.info("Starting %s", self.host)
@@ -199,9 +200,11 @@ class AsyncTCPClient:
             try:
                 msg = self.sock.recv(4096)
             except _socket.error:
+                self.logger.debug("Socket error on connection to %s, changing to ERROR_STATE", self.host)
                 self.change_state(AsyncTCPClient.ERROR_STATE)
                 break
-            if msg is None or len(msg) == 0:
+            if msg == '':
+                self.logger.debug("Empty msg on connection to %s, changing to ERROR_STATE", self.host)
                 self.change_state(AsyncTCPClient.ERROR_STATE)
                 break
             data.append(msg)

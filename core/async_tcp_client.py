@@ -134,8 +134,10 @@ class AsyncTCPClient:
             return self.socket_factory()
         sock = _socket.socket(_socket.AF_INET, _socket.SOCK_STREAM)
         sock.setsockopt(_socket.SOL_SOCKET, _socket.SO_KEEPALIVE, 1)
-        sock.setsockopt(_socket.SOL_TCP, _socket.TCP_KEEPINTVL, 1)
-        sock.setsockopt(_socket.SOL_TCP, _socket.TCP_KEEPCNT, 5)
+        sock.setsockopt(_socket.IPPROTO_TCP, _socket.TCP_KEEPINTVL, 1)
+        sock.setsockopt(_socket.IPPROTO_TCP, _socket.TCP_KEEPCNT, 5)
+        sock.setblocking(0)
+        sock.settimeout(1)
         return sock
 
     def start(self):
@@ -187,13 +189,13 @@ class AsyncTCPClient:
 
     def receive_loop(self):
         while self.state == AsyncTCPClient.CONNECTED_STATE:
-            try:
-                socket.wait_read(self.sock.fileno(), timeout=1)
-            except _socket.timeout:
-                continue
-            except _socket.error:
-                self.logger.debug("Socket error on connection to %s, changing to ERROR_STATE", self.host)
-                self.change_state(AsyncTCPClient.ERROR_STATE)
+            # try:
+            #     socket.wait_read(self.sock.fileno(), timeout=1)
+            # except _socket.timeout:
+            #     continue
+            # except _socket.error:
+            #     self.logger.debug("Socket error on connection to %s, changing to ERROR_STATE", self.host)
+            #     self.change_state(AsyncTCPClient.ERROR_STATE)
             msg = self.get_line()
             self.logger.debug("Received %s from %s on port %s", repr(msg), self.host, self.port)
             if self.msg_handler is not None and msg is not None:
@@ -231,9 +233,12 @@ class AsyncTCPClient:
             try:
                 socket.wait_write(self.sock.fileno(), timeout=1)
                 self.sock.sendall(str(msg))
+            except _socket.timeout:
+                continue
             except _socket.error:
                 self.logger.debug("Unable to send message %s to %s on port $s", repr(msg), self.host, self.port)
-                continue
+                self.change_state(AsyncTCPClient.ERROR_STATE)
+                break
             self.logger.debug("Sent message %s to %s on port %s", repr(msg), self.host, self.port)
 
     def wait(self):

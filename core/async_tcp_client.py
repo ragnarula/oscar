@@ -213,8 +213,11 @@ class AsyncTCPClient:
             self.logger.debug("Spawning thread for send loop")
             self.pool.spawn(self.send_loop)
 
+    def connected(self):
+        return self.state == AsyncTCPClient.CONNECTED_STATE
+
     def receive_loop(self):
-        while self.state == AsyncTCPClient.CONNECTED_STATE:
+        while self.connected():
             msg = self.get_line()
             if self.msg_handler is not None and msg is not None:
                 self.logger.debug("Received %s from %s:%s", repr(msg), self.host, self.port)
@@ -222,7 +225,7 @@ class AsyncTCPClient:
 
     def get_line(self):
         data = []
-        while self.state == AsyncTCPClient.CONNECTED_STATE:
+        while self.connected():
             msg = ''
             try:
                 msg = self.sock.recv(4096)
@@ -230,14 +233,14 @@ class AsyncTCPClient:
                 print "timeout"
                 continue
             except _socket.error:
-                if self.state == AsyncTCPClient.CONNECTED_STATE:
+                if self.connected():
                     self.logger.debug("Socket error on connection to %s:%s, changing to ERROR_STATE",
                                       self.host,
                                       self.port)
                     self.change_state(AsyncTCPClient.ERROR_STATE)
                     break
             if msg == '':
-                if self.state == AsyncTCPClient.CONNECTED_STATE:
+                if self.connected():
                     self.logger.debug("Empty msg on connection to %s:%s, changing to ERROR_STATE",
                                       self.host,
                                       self.port)
@@ -250,7 +253,7 @@ class AsyncTCPClient:
             return ''.join(data)
 
     def send_loop(self):
-        while self.state == AsyncTCPClient.CONNECTED_STATE:
+        while self.connected():
             try:
                 msg = self.msg_queue.get(timeout=1)
             except gevent.queue.Empty:

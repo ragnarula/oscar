@@ -88,6 +88,7 @@ class AsyncTCPClient:
 
         def start(self, client):
             client.change_state(AsyncTCPClient.READY_STATE)
+            client.change_state(AsyncTCPClient.CONNECTING_STATE)
 
         def stop(self, client):
             pass

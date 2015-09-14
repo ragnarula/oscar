@@ -5,78 +5,27 @@ from django.db import DatabaseError
 
 class DeviceConnection(AsyncTCPClient):
 
-    class ReadyState(AsyncTCPClient.ReadyState):
-
-        def update(self, conn):
-            conn.device.refresh_from_db()
-            if conn.device.active:
-                conn.start()
-
-        def enter(self, conn):
-            AsyncTCPClient.ReadyState.enter(self, conn)
-            conn.host = conn.device.host
-            conn.port = conn.device.port
-            conn.timeout = conn.device.timeout
-            conn.active = conn.device.active
-
     class ConnectingState(AsyncTCPClient.ConnectingState):
 
-        def update(self, conn):
-            conn.device.refresh_from_db()
-            if conn.device.timeout != conn.timeout:
-                conn.timeout = conn.device.timeout
-            if (
-                conn.device.host != conn.host or
-                conn.device.port != conn.port
-            ):
-                conn.stop()
-
-            if conn.active:
-                conn.start()
-            else:
-                conn.stop()
+        def enter(self, conn):
+            conn.update()
+            AsyncTCPClient.ConnectingState.enter(self, conn)
 
     class ErrorState(AsyncTCPClient.ErrorState):
 
-        def update(self, conn):
-            conn.change_state(AsyncTCPClient.READY_STATE)
-
         def enter(self, conn):
             AsyncTCPClient.ErrorState.enter(self, conn)
-            if conn.active:
+            if conn.device.active:
                 conn.start()
 
     class TimeoutState(AsyncTCPClient.TimeoutState):
 
-        def update(self, conn):
-            conn.change_state(AsyncTCPClient.READY_STATE)
-
         def enter(self, conn):
             AsyncTCPClient.TimeoutState.enter(self, conn)
-            conn.active = False
             conn.device.active = False
             conn.device.save(update_fields=['active'])
 
-    class ConnectedState(AsyncTCPClient.ConnectedState):
-
-        def update(self, conn):
-            conn.device.refresh_from_db()
-            if conn.device.timeout != conn.timeout:
-                conn.timeout = conn.device.timeout
-            if (
-                conn.device.host != conn.host or
-                conn.device.port != conn.port
-            ):
-                conn.stop()
-
-            if conn.active:
-                conn.start()
-            else:
-                conn.stop()
-
-    AsyncTCPClient.READY_STATE = ReadyState()
     AsyncTCPClient.CONNECTING_STATE = ConnectingState()
-    AsyncTCPClient.CONNECTED_STATE = ConnectedState()
     AsyncTCPClient.ERROR_STATE = ErrorState()
     AsyncTCPClient.TIMEOUT_STATE = TimeoutState()
 
@@ -95,4 +44,19 @@ class DeviceConnection(AsyncTCPClient):
             pass
 
     def update(self):
-        self.state.update(self)
+        self.device.refresh_from_db()
+        if not self.device.active:
+            self.stop()
+        
+        if self.device.timeout != self.timeout:
+            self.timeout = self.device.timeout
+        if (
+            self.device.host != self.host or
+            self.device.port != self.port
+        ):
+            self.stop()
+            self.host = self.device.host
+            self.port = self.device.port
+
+        if self.device.active:
+            self.start()

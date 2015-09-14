@@ -16,7 +16,7 @@ class AsyncTCPClient:
             client.change_state(AsyncTCPClient.CONNECTING_STATE)
 
         def stop(self, client):
-            client.active = False
+            pass
 
         def send(self, client, msg):
             pass
@@ -35,7 +35,6 @@ class AsyncTCPClient:
             pass
 
         def stop(self, client):
-            client.active = False
             client.change_state(AsyncTCPClient.READY_STATE)
 
         def send(self, client, msg):
@@ -54,7 +53,6 @@ class AsyncTCPClient:
             pass
 
         def stop(self, client):
-            client.active = False
             client.change_state(AsyncTCPClient.READY_STATE)
 
         def send(self, client, msg):
@@ -71,10 +69,8 @@ class AsyncTCPClient:
 
         def start(self, client):
             client.change_state(AsyncTCPClient.READY_STATE)
-            client.change_state(AsyncTCPClient.CONNECTING_STATE)
 
         def stop(self, client):
-            client.active = False
             client.change_state(AsyncTCPClient.READY_STATE)
 
         def send(self, server, msg):
@@ -94,7 +90,6 @@ class AsyncTCPClient:
             client.change_state(AsyncTCPClient.CONNECTING_STATE)
 
         def stop(self, client):
-            client.active = False
             client.change_state(AsyncTCPClient.READY_STATE)
 
         def send(self, server, msg):
@@ -114,12 +109,11 @@ class AsyncTCPClient:
     ERROR_STATE = ErrorState()
     TIMEOUT_STATE = TimeoutState()
 
-    def __init__(self, host, port, active=False, socket_factory=None, pool=None, timeout=None, logger_factory=None):
+    def __init__(self, host, port, socket_factory=None, pool=None, timeout=None, logger_factory=None):
         if pool is None:
             self.pool = Pool()
         else:
             self.pool = pool
-        self.active = active
         self.timeout = timeout
         self.msg_handler = None
         self.sock = None
@@ -256,6 +250,3 @@ class AsyncTCPClient:
                 self.change_state(AsyncTCPClient.ERROR_STATE)
                 break
             self.logger.debug("Sent message %s to %s:%s", repr(msg), self.host, self.port)
-
-    def wait(self):
-        self.pool.wait()

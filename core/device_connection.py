@@ -8,7 +8,6 @@ class DeviceConnection(AsyncTCPClient):
     class ConnectingState(AsyncTCPClient.ConnectingState):
 
         def enter(self, conn):
-            conn.update()
             AsyncTCPClient.ConnectingState.enter(self, conn)
 
     class ErrorState(AsyncTCPClient.ErrorState):

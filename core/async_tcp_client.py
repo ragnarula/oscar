@@ -230,6 +230,7 @@ class AsyncTCPClient:
             if self.msg_handler is not None and msg is not None:
                 self.logger.debug("Received %s from %s:%s", repr(msg), self.host, self.port)
                 self.msg_handler(msg)
+        self.logger.debug("%s:%s receive loop ending")
 
     def get_line(self):
         data = []
@@ -277,3 +278,4 @@ class AsyncTCPClient:
                 self.change_state(AsyncTCPClient.ERROR_STATE)
                 break
             self.logger.debug("Sent message %s to %s:%s", repr(msg), self.host, self.port)
+        self.logger.debug("%s:%s send loop ending")

@@ -109,7 +109,6 @@ class ConnectionManager:
             self.add_device(name)
             return
         conn.update()
-        print "updated device " + conn.device.name
 
     def delete(self, name):
         try:
@@ -118,7 +117,6 @@ class ConnectionManager:
             return
         conn.stop()
         del self.connection_map[name]
-        print "removed device " + conn.device.name
 
     def add_device(self, name):
         try:
@@ -129,4 +127,3 @@ class ConnectionManager:
         if device.active:
             conn.start()
         self.connection_map[device.name] = conn
-        print "added device " + conn.device.name

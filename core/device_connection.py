@@ -84,7 +84,7 @@ class RemoteDevice:
         self.connection.start()
 
     def stop(self):
-        self.device_model.stop()
+        self.connection.stop()
 
     def update(self):
         self.device_model.refresh_from_db()

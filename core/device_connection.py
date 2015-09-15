@@ -71,7 +71,7 @@ class RemoteDevice:
         self.connection = AsyncTCPClient(device_model.host, device_model.port,
                                          timeout=device_model.timeout,
                                          logger_factory=logger_factory,
-                                         pool=self.pool)
+                                         pool=pool)
         if logger_factory is not None:
             self.logger = logger_factory()
             self.logger_factory = logger_factory

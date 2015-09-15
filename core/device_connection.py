@@ -78,6 +78,7 @@ class RemoteDevice:
         else:
             self.logger = logging.getLogger(__name__)
         self.pool = pool
+        self.name = self.device_model.name
 
     def start(self):
         self.connection.start()
@@ -87,9 +88,10 @@ class RemoteDevice:
 
     def update(self):
         self.device_model.refresh_from_db()
-        self.logger.debug("Updating device %s %s:%s tout: %s to %s:%s tout: %s act: %s",
-                          self.device_model.id, self.connection.host, self.connection.port,
-                          self.connection.timeout, self.device_model.host, self.device_model.port,
+        self.logger.debug("%s UPDATING %s:%s tout: %s to %s %s:%s tout: %s act: %s",
+                          self.name, self.connection.host, self.connection.port,
+                          self.connection.timeout, self.device_model.name,
+                          self.device_model.host, self.device_model.port,
                           self.device_model.timeout, self.device_model.active)
 
         if not self.device_model.active:
@@ -108,4 +110,3 @@ class RemoteDevice:
                                              pool=self.pool)
         if self.device_model.active:
             self.start()
-

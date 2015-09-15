@@ -183,9 +183,12 @@ class AsyncTCPClient:
         self.state = state
         self.state.enter(self)
 
+    def connecting(self):
+        return self.state == AsyncTCPClient.CONNECTING_STATE
+
     def connect_loop(self):
         connection_attempts = 0
-        while self.state == AsyncTCPClient.CONNECTING_STATE:
+        while self.connecting():
             if self.timeout is not None and connection_attempts > self.timeout:
                 self.sock.close()
                 self.change_state(AsyncTCPClient.TIMEOUT_STATE)
@@ -201,11 +204,12 @@ class AsyncTCPClient:
                 self.sock.connect(address)
             except _socket.error:
                 self.sock.close()
-                self.sock = self.get_socket()
                 self.logger.debug("Could not connect to %s:%s, waiting 1 to try again",
                                   self.host,
                                   self.port)
                 gevent.sleep(1)
+                if self.connecting():
+                    self.sock = self.get_socket()
                 continue
             self.logger.debug("Connection to %s:%s established", self.host, self.port)
             self.msg_queue = Queue()

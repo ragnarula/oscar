@@ -43,6 +43,9 @@ class DeviceConnection(AsyncTCPClient):
 
     def update(self):
         self.device.refresh_from_db()
+        self.logger.debug("Updating %s:%s tout: %s to %s:%s tout: %s act: %s",
+                          self.host, self.port, self.timeout,
+                          self.device.host, self.device.port, self.device.timeout, self.device.active)
         if not self.device.active:
             self.stop()
 

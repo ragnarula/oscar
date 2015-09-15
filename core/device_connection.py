@@ -73,7 +73,7 @@ class RemoteDevice:
                                          logger_factory=logger_factory,
                                          pool=pool)
         if logger_factory is not None:
-            self.logger = logger_factory()
+            self.logger = logger_factory(__name__)
             self.logger_factory = logger_factory
         else:
             self.logger = logging.getLogger(__name__)

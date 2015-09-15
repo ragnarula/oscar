@@ -6,7 +6,7 @@ monkey.patch_all()
 from gevent.pool import Pool
 from gevent.queue import Queue
 from api.models import Device
-from device_connection import DeviceConnection, RemoteDevice
+from device_connection import RemoteDevice
 
 class ConnectionManager:
 

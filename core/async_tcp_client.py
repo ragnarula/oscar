@@ -210,7 +210,8 @@ class AsyncTCPClient:
                 gevent.sleep(1)
                 if self.connecting():
                     self.sock = self.get_socket()
-                continue
+                    continue
+                break
             self.logger.debug("Connection to %s:%s established", self.host, self.port)
             self.msg_queue = Queue()
             self.change_state(AsyncTCPClient.CONNECTED_STATE)

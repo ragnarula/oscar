@@ -86,6 +86,9 @@ class RemoteDevice:
     def stop(self):
         self.connection.stop()
 
+    def send(self, msg):
+        self.connection.send(msg)
+
     def update(self):
         self.device_model.refresh_from_db()
         self.logger.debug("%s UPDATING %s:%s tout: %s to %s %s:%s tout: %s act: %s",

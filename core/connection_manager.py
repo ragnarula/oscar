@@ -6,7 +6,7 @@ monkey.patch_all()
 from gevent.pool import Pool
 from gevent.queue import Queue
 from api.models import Device
-from device_connection import DeviceConnection
+from device_connection import DeviceConnection, RemoteDevice
 
 class ConnectionManager:
 
@@ -38,8 +38,7 @@ class ConnectionManager:
             manager.osc_msg_queue = Queue()
             devices = Device.objects.all()
             for d in devices:
-                conn = DeviceConnection(d, pool=manager.pool)
-                conn.change_state(DeviceConnection.READY_STATE)
+                conn = RemoteDevice(d, pool=manager.pool, logger_factory=manager.logger_factory)
                 if d.active:
                     conn.start()
                 gevent.sleep()
@@ -126,7 +125,7 @@ class ConnectionManager:
             device = Device.objects.get(pk=name)
         except Device.DoesNotExist:
             return
-        conn = DeviceConnection(device, pool=self.pool, logger_factory=self.logger_factory)
+        conn = RemoteDevice(device, pool=self.pool, logger_factory=self.logger_factory)
         if device.active:
             conn.start()
         self.connection_map[device.name] = conn

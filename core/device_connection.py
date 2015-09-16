@@ -1,15 +1,16 @@
 __author__ = 'raghavnarula'
 from async_tcp_client import AsyncTCPClient
-from django.db import DatabaseError
 import logging
 
 
 class RemoteDevice:
 
-    def __init__(self, device_model, logger_factory=None, pool=None, connection=None):
-        self.connection = connection
+    def __init__(self, device_model, logger_factory=None, pool=None):
         self.device_model = device_model
-
+        self.connection = AsyncTCPClient(device_model.host, device_model.port,
+                                         timeout=device_model.timeout,
+                                         logger_factory=logger_factory,
+                                         pool=pool)
         if logger_factory is not None:
             self.logger = logger_factory(__name__)
             self.logger_factory = logger_factory
@@ -18,8 +19,11 @@ class RemoteDevice:
         self.pool = pool
         self.name = self.device_model.name
 
+    def on_state_change(self, previous, next):
+        if next is AsyncTCPClient.ERROR_STATE and self.device_model.active:
+            self.update()
+
     def start(self):
-        self.update()
         self.connection.start()
 
     def stop(self):

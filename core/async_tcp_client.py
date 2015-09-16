@@ -131,7 +131,12 @@ class AsyncTCPClient:
     ERROR_STATE = ErrorState()
     TIMEOUT_STATE = TimeoutState()
 
-    def __init__(self, host, port, socket_factory=None, pool=None, timeout=None, logger_factory=None):
+    def __init__(self, host, port,
+                 socket_factory=None,
+                 pool=None, timeout=None,
+                 logger_factory=None,
+                 state_change_listener=None):
+        self.state_change_listener = state_change_listener
         if pool is None:
             self.pool = Pool()
         else:
@@ -179,9 +184,12 @@ class AsyncTCPClient:
                          self.port,
                          self.state.name,
                          state.name)
+        previous = self.state
         self.state.exit(self)
         self.state = state
         self.state.enter(self)
+        if self.state_change_listener is not None:
+            self.state_change_listener(previous, state)
 
     def connecting(self):
         return self.state == AsyncTCPClient.CONNECTING_STATE

@@ -173,6 +173,7 @@ class AsyncTCPClient:
     def stop(self):
         self.logger.info("%s:%s stopping", self.host, self.port)
         self.state.stop(self)
+        self.release()
 
     def send(self, msg):
         self.logger.info("%s:%s sending", self.host, self.port)
@@ -190,6 +191,9 @@ class AsyncTCPClient:
         self.state.enter(self)
         if self.state_change_listener is not None:
             self.state_change_listener(previous, state)
+
+    def release(self):
+        self.state_change_listener = None
 
     def connecting(self):
         return self.state == AsyncTCPClient.CONNECTING_STATE

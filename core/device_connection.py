@@ -22,7 +22,9 @@ class RemoteDevice:
 
     def on_state_change(self, previous, next):
         if next is AsyncTCPClient.ERROR_STATE and self.device_model.active:
-            self.update()
+            self.connection.stop()
+            self.connection = self.get_connection()
+            self.connection.start()
 
     def start(self):
         self.connection.start()
@@ -32,6 +34,14 @@ class RemoteDevice:
 
     def send(self, msg):
         self.connection.send(msg)
+
+    def get_connection(self):
+        connection = AsyncTCPClient(self.device_model.host, self.device_model.port,
+                                    timeout=self.device_model.timeout,
+                                    logger_factory=self.logger_factory,
+                                    pool=self.pool,
+                                    state_change_listener=self.on_state_change)
+        return connection
 
     def update(self):
         self.device_model.refresh_from_db()
@@ -51,10 +61,6 @@ class RemoteDevice:
             self.device_model.port != self.connection.port
         ):
             self.stop()
-            self.connection = AsyncTCPClient(self.device_model.host, self.device_model.port,
-                                             timeout=self.device_model.timeout,
-                                             logger_factory=self.logger_factory,
-                                             pool=self.pool,
-                                             state_change_listener=self.on_state_change)
+            self.connection = self.get_connection()
         if self.device_model.active:
             self.start()

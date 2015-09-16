@@ -201,7 +201,7 @@ class AsyncTCPClient:
 
     def connect_loop(self):
         connection_attempts = 0
-        sock = self.sock
+        sock = self.get_socket()
         while self.connecting():
             if self.timeout is not None and connection_attempts > self.timeout:
                 sock.close()
@@ -226,6 +226,7 @@ class AsyncTCPClient:
                     sock = self.get_socket()
                     continue
                 break
+            self.sock = sock
             self.logger.debug("%s:%s Connection established", self.host, self.port)
             self.msg_queue = Queue()
             self.change_state(AsyncTCPClient.CONNECTED_STATE)

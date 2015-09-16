@@ -7,6 +7,7 @@ import logging
 class RemoteDevice:
 
     def __init__(self, device_model, logger_factory=None, pool=None):
+        self.logger.debug("%s Init")
         self.device_model = device_model
         self.connection = AsyncTCPClient(device_model.host, device_model.port,
                                          timeout=device_model.timeout,

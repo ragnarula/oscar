@@ -26,7 +26,7 @@ class RemoteDevice:
             self.connection.stop()
             self.connection = self.get_connection()
             self.connection.start()
-        self.device_model.current_state = next.name
+        self.device_model.current_state = self.connection.state.name
         try:
             self.device_model.save(update_fields=['current_state'])
         except DatabaseError:

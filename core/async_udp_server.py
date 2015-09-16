@@ -9,7 +9,7 @@ import logging
 class AsyncUDPServer():
     # state classes first
     class ReadyState():
-
+        name = "READY_STATE"
         def start(self, server):
             server.change_state(AsyncUDPServer.RUNNING_STATE)
 
@@ -25,7 +25,7 @@ class AsyncUDPServer():
 
 
     class RunningState():
-
+        name = "RUNNING_STATE"
         def start(self, server):
             pass
 
@@ -46,7 +46,7 @@ class AsyncUDPServer():
 
 
     class ErrorState():
-
+        name = "ERROR_STATE"
         def start(self, server):
             server.change_state(AsyncUDPServer.READY_STATE)
             server.change_state(AsyncUDPServer.RUNNING_STATE)
@@ -88,15 +88,19 @@ class AsyncUDPServer():
         return socket.socket(_socket.AF_INET, _socket.SOCK_DGRAM)
 
     def start(self):
+        self.logger.info("UDP Server start")
         self.state.start(self)
 
     def stop(self):
+        self.logger.info("UDP Server stop")
         self.state.stop(self)
 
     def change_state(self, state):
+        prev = self.state
         self.state.exit(self)
         self.state = state
         self.state.enter(self)
+        self.logger.info("UDP Server changing state from %s to %s", prev.name, state.name)
 
     def run(self):
         while self.state == AsyncUDPServer.RUNNING_STATE:
@@ -105,10 +109,10 @@ class AsyncUDPServer():
             except _socket.error:
                 continue
             msg = self.sock.recv(4096)
-            print "received UDP message " + msg
+            self.logger.debug("UDP Server received message %s", repr(msg))
             if self.msg_handler is not None:
                 self.msg_handler(msg)
-        print "udp ending"
+        self.logger.info("Ending UDP server run loop")
 
     def wait(self):
         self.pool.wait()

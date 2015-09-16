@@ -168,25 +168,25 @@ class AsyncTCPClient:
         return sock
 
     def start(self):
-        self.logger.info("%s:%s starting", self.host, self.port)
+        self.logger.info("%s:%s called start", self.host, self.port)
         self.state.start(self)
 
     def stop(self):
-        self.logger.info("%s:%s stopping", self.host, self.port)
+        self.logger.info("%s:%s called stop", self.host, self.port)
         self.state.stop(self)
         self.release()
 
     def send(self, msg):
-        self.logger.info("%s:%s sending", self.host, self.port)
+        self.logger.info("%s:%s sending message %s", self.host, self.port, repr(msg))
         self.state.send(self, msg)
 
     def change_state(self, state):
+        previous = self.state
         self.logger.info("%s:%s changing state from %s to %s",
                          self.host,
                          self.port,
-                         self.state.name,
+                         previous.name,
                          state.name)
-        previous = self.state
         self.state.exit(self)
         self.state = state
         self.state.enter(self)
@@ -206,19 +206,19 @@ class AsyncTCPClient:
             if self.timeout is not None and connection_attempts > self.timeout:
                 sock.close()
                 self.change_state(AsyncTCPClient.TIMEOUT_STATE)
-                self.logger.debug("%s:%s exceeded timeout of %s",
+                self.logger.debug("%s:%s Exceeded timeout of %s",
                                   self.host,
                                   self.port,
                                   self.timeout)
                 break
             connection_attempts += 1
             try:
-                self.logger.debug("%s:%s attepmpting to connect", self.host, self.port)
+                self.logger.debug("%s:%s Trying to connect", self.host, self.port)
                 address = (self.host, int(self.port))
                 sock.connect(address)
             except _socket.error:
                 sock.close()
-                self.logger.debug("%s:%s could not connect, waiting 1 to try again",
+                self.logger.debug("%s:%s Could not connect, waiting 1 to try again",
                                   self.host,
                                   self.port)
                 gevent.sleep(1)
@@ -230,11 +230,11 @@ class AsyncTCPClient:
             self.logger.debug("%s:%s Connection established", self.host, self.port)
             self.msg_queue = Queue()
             self.change_state(AsyncTCPClient.CONNECTED_STATE)
-            self.logger.debug("%s:%s spawning thread for receive loop", self.host, self.port)
+            self.logger.debug("%s:%s Spawning thread for receive loop", self.host, self.port)
             self.pool.spawn(self.receive_loop)
-            self.logger.debug("%s:%s spawning thread for send loop", self.host, self.port)
+            self.logger.debug("%s:%s Spawning thread for send loop", self.host, self.port)
             self.pool.spawn(self.send_loop)
-        self.logger.debug("%s:%s connection loop ending", self.host, self.port)
+        self.logger.debug("%s:%s Connect loop ending", self.host, self.port)
 
     def connected(self):
         return self.state == AsyncTCPClient.CONNECTED_STATE
@@ -243,9 +243,9 @@ class AsyncTCPClient:
         while self.connected():
             msg = self.get_line()
             if self.msg_handler is not None and msg is not None:
-                self.logger.debug("%s:%s received %s", repr(msg), self.host, self.port)
+                self.logger.debug("%s:%s Received %s", repr(msg), self.host, self.port)
                 self.msg_handler(msg)
-        self.logger.debug("%s:%s receive loop ending", self.host, self.port)
+        self.logger.debug("%s:%s Receive loop ending", self.host, self.port)
 
     def get_line(self):
         data = []
@@ -257,14 +257,14 @@ class AsyncTCPClient:
                 continue
             except _socket.error:
                 if self.connected():
-                    self.logger.debug("%s:%s socket error, changing to ERROR_STATE",
+                    self.logger.debug("%s:%s Socket error, changing to ERROR_STATE",
                                       self.host,
                                       self.port)
                     self.change_state(AsyncTCPClient.ERROR_STATE)
                     break
             if msg == '':
                 if self.connected():
-                    self.logger.debug("%s:%s empty msg received, changing to ERROR_STATE",
+                    self.logger.debug("%s:%s Empty msg received, changing to ERROR_STATE",
                                       self.host,
                                       self.port)
                     self.change_state(AsyncTCPClient.ERROR_STATE)
@@ -281,15 +281,15 @@ class AsyncTCPClient:
                 msg = self.msg_queue.get(timeout=1)
             except gevent.queue.Empty:
                 continue
-            self.logger.debug("%s:%s sending message %s", repr(msg), self.host, self.port)
+            self.logger.debug("%s:%s Sending message %s", self.host, self.port, repr(msg))
             try:
                 socket.wait_write(self.sock.fileno(), timeout=1)
                 self.sock.sendall(str(msg))
             except _socket.timeout:
                 continue
             except _socket.error:
-                self.logger.debug("%s:%s Unable to send message", repr(msg), self.host, self.port)
+                self.logger.debug("%s:%s Unable to send message", self.host, self.port, repr(msg))
                 self.change_state(AsyncTCPClient.ERROR_STATE)
                 break
-            self.logger.debug("%s:%s Sent message %s", repr(msg), self.host, self.port)
-        self.logger.debug("%s:%s send loop ending", self.host, self.port)
+            self.logger.debug("%s:%s Sent message %s", self.host, self.port, repr(msg))
+        self.logger.debug("%s:%s Send loop ending", self.host, self.port)

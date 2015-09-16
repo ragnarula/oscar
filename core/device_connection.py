@@ -22,9 +22,9 @@ class RemoteDevice:
         self.name = self.device_model.name
 
     def on_state_change(self, previous, next):
-        self.logger.debug("%s State change from %s to %s", self.device_model.name, previous.name, next.name)
+        self.logger.debug("%s changing state from %s to %s", self.device_model.name, previous.name, next.name)
         if next is AsyncTCPClient.ERROR_STATE and self.device_model.active:
-            self.logger.debug("%s in ERROR_STATE and is active, restarting", self.device_model.name)
+            self.logger.debug("%s entering ERROR_STATE and is active, restarting", self.device_model.name)
             self.connection.stop()
             self.connection = self.get_connection()
             self.connection.start()
@@ -35,15 +35,19 @@ class RemoteDevice:
                               self.device_model.name,
                               self.device_model.current_state)
         except DatabaseError:
+            self.logger.debug("%s Caught DatabaseError, failed to update model", self.device_model.name)
             pass
 
     def start(self):
+        self.logger.info("%s called start", self.device_model.name)
         self.connection.start()
 
     def stop(self):
+        self.logger.info("%s called stop", self.device_model.name)
         self.connection.stop()
 
     def send(self, msg):
+        self.logger.info("%s sending message %s", self.device_model.name, repr(msg))
         self.connection.send(msg)
 
     def get_connection(self):

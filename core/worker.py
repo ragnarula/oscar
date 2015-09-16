@@ -29,6 +29,7 @@ def get_oscar_logger(name):
 running = False
 queue = Queue()
 sem = BoundedSemaphore(1)
+logger = logging.getLogger(__name__)
 
 @shared_task
 def stop_server():
@@ -47,10 +48,10 @@ def run_server():
     global queue
     sem.acquire()
     if running:
-        print "Task already running!"
+        logging.debug("Server already running, ignoring.")
         sem.release()
         return
-
+    logging.info("Starting main process")
     app.control.purge()
     queue = Queue()
     running = True
@@ -74,7 +75,7 @@ def run_server():
         except gevent.queue.Empty:
             continue
         if msg == "STOP":
-            print "Received STOP"
+            logging.info("Received stop, breaking from loop")
             break
         if msg['type'] is "UP":
             connection_manager.update(msg['device'])

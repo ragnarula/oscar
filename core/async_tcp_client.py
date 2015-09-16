@@ -168,21 +168,21 @@ class AsyncTCPClient:
         return sock
 
     def start(self):
-        self.logger.info("%s:%s called start", self.host, self.port)
+        self.logger.info("%s:%s start", self.host, self.port)
         self.state.start(self)
 
     def stop(self):
-        self.logger.info("%s:%s called stop", self.host, self.port)
+        self.logger.info("%s:%s stop", self.host, self.port)
         self.state.stop(self)
         self.release()
 
     def send(self, msg):
-        self.logger.info("%s:%s sending message %s", self.host, self.port, repr(msg))
+        self.logger.info("%s:%s Sending message %s", self.host, self.port, repr(msg))
         self.state.send(self, msg)
 
     def change_state(self, state):
         previous = self.state
-        self.logger.info("%s:%s changing state from %s to %s",
+        self.logger.info("%s:%s Changing state from %s to %s",
                          self.host,
                          self.port,
                          previous.name,

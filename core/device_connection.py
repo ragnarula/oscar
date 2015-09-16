@@ -39,15 +39,15 @@ class RemoteDevice:
             pass
 
     def start(self):
-        self.logger.info("%s called start", self.device_model.name)
+        self.logger.info("%s Start", self.device_model.name)
         self.connection.start()
 
     def stop(self):
-        self.logger.info("%s called stop", self.device_model.name)
+        self.logger.info("%s Stop", self.device_model.name)
         self.connection.stop()
 
     def send(self, msg):
-        self.logger.info("%s sending message %s", self.device_model.name, repr(msg))
+        self.logger.info("%s Sending message %s", self.device_model.name, repr(msg))
         self.connection.send(msg)
 
     def get_connection(self):

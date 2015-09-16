@@ -19,7 +19,7 @@ class RemoteDevice:
         else:
             self.logger = logging.getLogger(__name__)
         self.pool = pool
-        self.logger.debug("%s Init")
+        self.logger.debug("%s Init", self.device_model.name)
 
     def on_state_change(self, previous, next):
         self.logger.debug("%s changing state from %s to %s", self.device_model.name, previous.name, next.name)

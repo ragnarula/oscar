@@ -16,11 +16,11 @@ from logging.handlers import TimedRotatingFileHandler
 from logging import Formatter
 
 CELERYD_HIJACK_ROOT_LOGGER = False
-loggers = {}
+logger_dict = {}
 
 
 def get_oscar_logger(name):
-    return loggers.get(name, default=build_logger(name))
+    return logger_dict.get(name, default=build_logger(name))
 
 
 def build_logger(name):
@@ -30,7 +30,7 @@ def build_logger(name):
     formatter = Formatter(fmt='%(asctime)s:%(levelname)s:%(filename)s:%(message)s')
     handler.setFormatter(formatter)
     logger.addHandler(handler)
-    loggers[name] = logger
+    logger_dict[name] = logger
     return logger
 
 running = False

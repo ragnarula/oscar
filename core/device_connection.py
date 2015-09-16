@@ -22,16 +22,17 @@ class RemoteDevice:
         self.logger.debug("%s Init", self.device_model.name)
 
     def on_state_change(self, previous, next):
-        self.logger.debug("%s changing state from %s to %s", self.device_model.name, previous.name, next.name)
+        self.logger.debug("%s Changing state from %s to %s", self.device_model.name, previous.name, next.name)
         if next is AsyncTCPClient.ERROR_STATE and self.device_model.active:
-            self.logger.debug("%s entering ERROR_STATE and is active, restarting", self.device_model.name)
+            self.logger.debug("%s Entering ERROR_STATE and is active, restarting", self.device_model.name)
             self.connection.stop()
             self.connection = self.get_connection()
             self.connection.start()
+            return
         self.device_model.current_state = self.connection.state.name
         try:
             self.device_model.save(update_fields=['current_state'])
-            self.logger.debug("%s updated model in DB to state %s",
+            self.logger.debug("%s Updated model in DB to state %s",
                               self.device_model.name,
                               self.device_model.current_state)
         except DatabaseError:

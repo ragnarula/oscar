@@ -31,6 +31,7 @@ def build_logger(name):
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     logger_dict[name] = logger
+    print repr(logger_dict)
     return logger
 
 running = False

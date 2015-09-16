@@ -13,6 +13,8 @@ from core.connection_manager import ConnectionManager
 import signal, os
 import logging
 
+CELERYD_HIJACK_ROOT_LOGGER = False
+
 
 def get_oscar_logger(name):
     logging.basicConfig(format='%(asctime)s:%(levelname)s:%(filename)s:%(message)s',level=logging.DEBUG)

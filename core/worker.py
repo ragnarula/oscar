@@ -20,8 +20,11 @@ logger_dict = {}
 
 
 def get_oscar_logger(name):
-    print name
-    return logger_dict.get(name, build_logger(name))
+    try:
+        logger = logger_dict[name]
+    except KeyError:
+        return build_logger(name)
+    return logger
 
 
 def build_logger(name):

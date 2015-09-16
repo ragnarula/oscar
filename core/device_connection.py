@@ -1,5 +1,6 @@
 __author__ = 'raghavnarula'
 from async_tcp_client import AsyncTCPClient
+from django.db import DatabaseError
 import logging
 
 
@@ -25,6 +26,12 @@ class RemoteDevice:
             self.connection.stop()
             self.connection = self.get_connection()
             self.connection.start()
+        self.device_model.current_state = next.name
+        try:
+            self.device_model.save(update_fields=['current_state'])
+        except DatabaseError:
+            pass
+
 
     def start(self):
         self.connection.start()

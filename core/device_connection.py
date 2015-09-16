@@ -10,7 +10,8 @@ class RemoteDevice:
         self.connection = AsyncTCPClient(device_model.host, device_model.port,
                                          timeout=device_model.timeout,
                                          logger_factory=logger_factory,
-                                         pool=pool)
+                                         pool=pool,
+                                         state_change_listener=self.on_state_change)
         if logger_factory is not None:
             self.logger = logger_factory(__name__)
             self.logger_factory = logger_factory
@@ -53,6 +54,7 @@ class RemoteDevice:
             self.connection = AsyncTCPClient(self.device_model.host, self.device_model.port,
                                              timeout=self.device_model.timeout,
                                              logger_factory=self.logger_factory,
-                                             pool=self.pool)
+                                             pool=self.pool,
+                                             state_change_listener=self.on_state_change)
         if self.device_model.active:
             self.start()

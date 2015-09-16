@@ -15,15 +15,21 @@ import logging
 from logging.handlers import TimedRotatingFileHandler
 from logging import Formatter
 
-# CELERYD_HIJACK_ROOT_LOGGER = False
+CELERYD_HIJACK_ROOT_LOGGER = False
+loggers = {}
 
 
 def get_oscar_logger(name):
+    return loggers.get(name, build_logger(name))
+
+
+def build_logger(name):
     logger = logging.getLogger(name)
     handler = TimedRotatingFileHandler(os.path.join('/var/log/oscar/core.log'), backupCount=5)
     formatter = Formatter(fmt='%(asctime)s:%(levelname)s:%(filename)s:%(message)s')
     handler.setFormatter(formatter)
     logger.addHandler(handler)
+    loggers[name] = logger
     return logger
 
 running = False

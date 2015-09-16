@@ -20,7 +20,7 @@ logger_dict = {}
 
 
 def get_oscar_logger(name):
-    return logger_dict.get(name, default=build_logger(name))
+    return logger_dict.get(name, build_logger(name))
 
 
 def build_logger(name):

@@ -20,7 +20,7 @@ loggers = {}
 
 
 def get_oscar_logger(name):
-    return loggers.get(name, build_logger(name))
+    return loggers.get(name, default=build_logger(name))
 
 
 def build_logger(name):

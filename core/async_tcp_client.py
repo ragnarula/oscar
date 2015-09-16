@@ -252,7 +252,6 @@ class AsyncTCPClient:
             try:
                 msg = self.sock.recv(4096)
             except _socket.timeout:
-                print "timeout"
                 continue
             except _socket.error:
                 if self.connected():

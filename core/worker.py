@@ -11,14 +11,13 @@ from core.async_udp_server import AsyncUDPServer
 from core.osc_message_parser import OSCMessageParser
 from core.connection_manager import ConnectionManager
 import signal, os
-from celery.utils.log import get_task_logger
 import logging
 
 
 def get_oscar_logger(name):
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
-    handler = logging.FileHandler(os.path.join('/var/log/oscar/', name + '.log'), 'w')
+    handler = logging.FileHandler(os.path.join('/var/log/oscar/core.log'), 'w')
     logger.addHandler(handler)
     return logger
 

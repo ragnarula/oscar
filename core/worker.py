@@ -20,6 +20,7 @@ logger_dict = {}
 
 
 def get_oscar_logger(name):
+    print name
     return logger_dict.get(name, build_logger(name))
 
 
@@ -31,7 +32,6 @@ def build_logger(name):
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     logger_dict[name] = logger
-    print repr(logger_dict)
     return logger
 
 running = False

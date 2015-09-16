@@ -28,7 +28,6 @@ def get_oscar_logger(name):
 
 
 def build_logger(name):
-    print "building"
     logger = logging.getLogger(name)
     handler = TimedRotatingFileHandler(os.path.join('/var/log/oscar/core.log'), backupCount=5)
     formatter = Formatter(fmt='%(asctime)s:%(levelname)s:%(filename)s:%(message)s')

@@ -12,14 +12,17 @@ from core.osc_message_parser import OSCMessageParser
 from core.connection_manager import ConnectionManager
 import signal, os
 import logging
+from logging.handlers import TimedRotatingFileHandler
+from logging import Formatter
 
 CELERYD_HIJACK_ROOT_LOGGER = False
 
 
 def get_oscar_logger(name):
-    logging.basicConfig(format='%(asctime)s:%(levelname)s:%(filename)s:%(message)s',level=logging.DEBUG)
     logger = logging.getLogger(name)
-    handler = logging.FileHandler(os.path.join('/var/log/oscar/core.log'), 'w')
+    handler = TimedRotatingFileHandler(os.path.join('/var/log/oscar/core.log'), backupCount=5)
+    formatter = Formatter(fmt='%(asctime)s:%(levelname)s:%(filename)s:%(message)s')
+    handler.setFormatter(formatter)
     logger.addHandler(handler)
     return logger
 

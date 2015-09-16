@@ -16,7 +16,7 @@ import logging
 
 def get_oscar_logger(name):
     logger = logging.getLogger(name)
-    logger.setLevel(logging.DEBUG)
+    logger.basicConfig(format='%(asctime)s:%(levelname)s:%(filename)s:%(message)s',level=logging.DEBUG)
     handler = logging.FileHandler(os.path.join('/var/log/oscar/core.log'), 'w')
     logger.addHandler(handler)
     return logger

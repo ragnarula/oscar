@@ -15,7 +15,7 @@ import logging
 from logging.handlers import TimedRotatingFileHandler
 from logging import Formatter
 
-CELERYD_HIJACK_ROOT_LOGGER = False
+# CELERYD_HIJACK_ROOT_LOGGER = False
 
 
 def get_oscar_logger(name):
@@ -29,7 +29,6 @@ def get_oscar_logger(name):
 running = False
 queue = Queue()
 sem = BoundedSemaphore(1)
-logger = logging.getLogger(__name__)
 
 @shared_task
 def stop_server():

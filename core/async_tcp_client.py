@@ -160,8 +160,9 @@ class AsyncTCPClient:
             return self.socket_factory()
         sock = _socket.socket(_socket.AF_INET, _socket.SOCK_STREAM)
         sock.setsockopt(_socket.SOL_SOCKET, _socket.SO_KEEPALIVE, 1)
-        sock.setsockopt(_socket.IPPROTO_TCP, _socket.TCP_KEEPINTVL, 1)
-        sock.setsockopt(_socket.IPPROTO_TCP, _socket.TCP_KEEPCNT, 5)
+        sock.setsockopt(_socket.SOL_TCP, socket.TCP_KEEPIDLE, 1)
+        sock.setsockopt(_socket.SOL_TCP, _socket.TCP_KEEPINTVL, 1)
+        sock.setsockopt(_socket.SOL_TCP, _socket.TCP_KEEPCNT, 5)
         sock.setblocking(0)
         sock.settimeout(1)
         return sock

@@ -107,6 +107,7 @@ class ConnectionManager:
         try:
             conn = self.connection_map[name]
         except KeyError:
+            self.logger.error("Device not found, adding", exc_info=True)
             self.add_device(name)
             return
         self.logger.info("%s Updating", name)
@@ -116,6 +117,7 @@ class ConnectionManager:
         try:
             conn = self.connection_map[name]
         except KeyError:
+            self.logger.error("Cant delete device, does not exist", exc_info=True)
             return
         self.logger.info("%s Deleting", name)
         conn.stop()
@@ -124,7 +126,8 @@ class ConnectionManager:
     def add_device(self, name):
         try:
             device = Device.objects.get(pk=name)
-        except Device.DoesNotExist:
+        except Device.DoesNotExist, e:
+            self.logger.error("Could not add device", exc_info=True)
             return
         self.logger.info("%s Adding", name)
         conn = RemoteDevice(device, pool=self.pool, logger_factory=self.logger_factory)

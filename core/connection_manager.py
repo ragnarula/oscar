@@ -56,6 +56,7 @@ class ConnectionManager:
     RUNNING_STATE = RunningState()
 
     def __init__(self, pool=None, logger_factory=None):
+        self.logger = logger_factory(__name__)
         if pool is None:
             self.pool = Pool()
         else:
@@ -108,6 +109,7 @@ class ConnectionManager:
         except KeyError:
             self.add_device(name)
             return
+        self.logger.info("%s Updating", name)
         conn.update()
 
     def delete(self, name):
@@ -115,6 +117,7 @@ class ConnectionManager:
             conn = self.connection_map[name]
         except KeyError:
             return
+        self.logger("%s Deleting", name)
         conn.stop()
         del self.connection_map[name]
 
@@ -123,7 +126,9 @@ class ConnectionManager:
             device = Device.objects.get(pk=name)
         except Device.DoesNotExist:
             return
+        self.logger("%s Adding", name)
         conn = RemoteDevice(device, pool=self.pool, logger_factory=self.logger_factory)
         if device.active:
+            self.logger.info("%s Starting", name)
             conn.start()
         self.connection_map[device.name] = conn

@@ -8,7 +8,7 @@ def activate_all(modeladmin, request, queryset):
             d.active = True
             d.save()
 
-activate_all.short_description = "Active selected"
+activate_all.short_description = "Activate selected"
 
 
 def deactivate_all(modeladmin, request, queryset):

@@ -31,8 +31,8 @@ class RemoteDevice:
             self.logger.debug("%s Updated model in DB to state %s",
                               self.device_model.name,
                               self.device_model.current_state)
-        except DatabaseError:
-            self.logger.debug("%s Caught DatabaseError, failed to update model", self.device_model.name)
+        except DatabaseError, e:
+            self.logger.error("Caught DatabaseError, failed to update model", exc_info=True)
             pass
 
     def start(self):

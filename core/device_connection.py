@@ -8,7 +8,6 @@ class RemoteDevice:
 
     def __init__(self, device_model, logger_factory=None, pool=None):
         self.device_model = device_model
-        self.connection = self.get_connection()
         if logger_factory is not None:
             self.logger = logger_factory(__name__)
             self.logger_factory = logger_factory
@@ -16,6 +15,7 @@ class RemoteDevice:
             self.logger = logging.getLogger(__name__)
             self.logger_factory = logging.getLogger
         self.pool = pool
+        self.connection = self.get_connection()
 
     def on_state_change(self, previous, next):
         self.logger.debug("%s Changing state from %s to %s", self.device_model.name, previous.name, next.name)

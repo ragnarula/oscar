@@ -126,7 +126,7 @@ class ConnectionManager:
             device = Device.objects.get(pk=name)
         except Device.DoesNotExist:
             return
-        self.logger("%s Adding", name)
+        self.logger.info("%s Adding", name)
         conn = RemoteDevice(device, pool=self.pool, logger_factory=self.logger_factory)
         if device.active:
             self.logger.info("%s Starting", name)

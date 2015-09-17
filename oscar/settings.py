@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '7r2=sw#x26=*8e&4fl#m-p*+hy596=7m_165+z_om*3_jm1(%='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -110,7 +110,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = '/home/pi/oscar/static'
+STATIC_ROOT = '/opt/oscar/'
 
 #Celery Settings
 #BROKER_URL = 'amqp://oscar:oscar@10.0.0.128:5672/oscar'

@@ -1,9 +1,10 @@
 from __future__ import absolute_import
+from gevent import monkey
+monkey.patch_all()
 from celery import shared_task
 from celery.signals import celeryd_init
 from gevent.lock import BoundedSemaphore
 from oscar.celeryapp import app
-from gevent import monkey; monkey.patch_all()
 import gevent
 from gevent.pool import Pool
 from gevent.queue import Queue

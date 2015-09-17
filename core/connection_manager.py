@@ -117,7 +117,7 @@ class ConnectionManager:
             conn = self.connection_map[name]
         except KeyError:
             return
-        self.logger("%s Deleting", name)
+        self.logger.info("%s Deleting", name)
         conn.stop()
         del self.connection_map[name]
 

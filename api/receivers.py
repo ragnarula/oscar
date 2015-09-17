@@ -1,6 +1,6 @@
 __author__ = 'raghavnarula'
 from django.dispatch import receiver
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save, pre_delete
 from api.models import Device
 from core.worker import update_device, delete_device
 
@@ -10,7 +10,7 @@ def notify(sender,**kwargs):
     pass
 
 
-@receiver(post_delete, sender=Device)
+@receiver(pre_delete, sender=Device)
 def notify_delete(sender, instance, **kwargs):
     print "Delete"
     delete_device.delay(instance.name)

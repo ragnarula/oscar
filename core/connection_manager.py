@@ -104,6 +104,7 @@ class ConnectionManager:
         print "manager ending"
 
     def update(self, name):
+        gevent.sleep(1)
         try:
             conn = self.connection_map[name]
         except KeyError:

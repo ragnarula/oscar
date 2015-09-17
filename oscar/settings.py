@@ -110,7 +110,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = '/home/pi/oscar/static'
+STATIC_ROOT = '/opt/oscar/static'
 
 #Celery Settings
 #BROKER_URL = 'amqp://oscar:oscar@10.0.0.128:5672/oscar'

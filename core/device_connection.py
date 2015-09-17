@@ -14,6 +14,7 @@ class RemoteDevice:
             self.logger_factory = logger_factory
         else:
             self.logger = logging.getLogger(__name__)
+            self.logger_factory = logging.getLogger
         self.pool = pool
 
     def on_state_change(self, previous, next):

@@ -65,6 +65,7 @@ class RemoteDevice:
 
         if not self.device_model.active:
             self.stop()
+            self.connection = self.get_connection()
 
         if self.device_model.timeout != self.connection.timeout:
             self.connection.timeout = self.device_model.timeout

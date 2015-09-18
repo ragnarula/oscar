@@ -136,11 +136,13 @@ class AsyncTCPClient:
                  pool=None, timeout=None,
                  logger_factory=None,
                  state_change_listener=None):
+        self.command_queue = Queue()
         self.state_change_listener = state_change_listener
         if pool is None:
             self.pool = Pool()
         else:
             self.pool = pool
+        self.pool.spawn(self.command_thread)
         self.timeout = timeout
         self.msg_handler = None
         self.sock = None
@@ -154,6 +156,18 @@ class AsyncTCPClient:
             self.logger = logging.getLogger(__name__)
         else:
             self.logger = logger_factory(__name__)
+
+    def command_thread(self):
+        while True:
+            try:
+                msg = self.command_queue.get(timeout=1)
+            except gevent.queue.Empty:
+                continue
+            if msg == "STOP":
+                self.state.stop()
+                break
+            if msg == "START":
+                self.state.start()
 
     def get_socket(self):
         if self.socket_factory is not None:
@@ -169,11 +183,11 @@ class AsyncTCPClient:
 
     def start(self):
         self.logger.info("%s:%s start", self.host, self.port)
-        self.state.start(self)
+        self.command_queue.put("START")
 
     def stop(self):
         self.logger.info("%s:%s stop", self.host, self.port)
-        self.state.stop(self)
+        self.command_queue.put("STOP")
         self.release()
 
     def send(self, msg):

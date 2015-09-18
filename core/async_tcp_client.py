@@ -164,10 +164,10 @@ class AsyncTCPClient:
             except gevent.queue.Empty:
                 continue
             if msg == "STOP":
-                self.state.stop()
+                self.state.stop(self)
                 break
             if msg == "START":
-                self.state.start()
+                self.state.start(self)
 
     def get_socket(self):
         if self.socket_factory is not None:

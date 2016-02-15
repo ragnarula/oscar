@@ -1,6 +1,6 @@
 # Oscar
 
-Modern show automation software systems such as [Qlab](https://figure53.com/qlab/) support the use of the [Open Sound Control] protocol to communicate with, and automate external devices. Unfortunately however, many hardware devices used the professional broadcast and events industry do not support OSC directly. To overcome this, OSCar is designed to establish a connection to any device which accept TCP connections via an ethernet port, and forward messages recieved via OSC to the devices. 
+Modern show automation software systems such as [Qlab](https://figure53.com/qlab/) support the use of the [Open Sound Control](https://en.wikipedia.org/wiki/Open_Sound_Control) protocol to communicate with, and automate external devices. Unfortunately however, many hardware devices used the professional broadcast and events industry do not support OSC directly. To overcome this, OSCar is designed to establish a connection to any device which accept TCP connections via an ethernet port, and forward messages recieved via OSC to the devices. 
 
 Users must be aware of the required formatting of the messages, details of which are generally available from the hardware manuals, or directly from the manufacurers.
 

@@ -185,6 +185,7 @@ class AsyncTCPClient:
         self.logger.info("%s:%s start", self.host, self.port)
         self.command_queue.put("START")
 
+
     def stop(self):
         self.logger.info("%s:%s stop", self.host, self.port)
         self.command_queue.put("STOP")
